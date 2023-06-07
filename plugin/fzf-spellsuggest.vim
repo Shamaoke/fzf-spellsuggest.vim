@@ -1,23 +1,16 @@
 vim9script
 
-import './fzf-options' as fzf
+import './fzf-options.vim' as Fzf
 
 ##
 # ::: Fzf Spellsuggest :::
 #
 
-const fzf_spellsuggest_options = {
-  'source': FzfSpellsuggestSource(),
-  'sink': FzfSpellsuggestSink
-}
-
-const fzf_spec = extend(copy(fzf_spellsuggest_options), fzf.options)
-
-def FzfSpellsuggestSource(): list<string>
-  return spellsuggest(expand("<cwrod>"))
+def FzfSpellsuggestSource(word: string): list<string>
+  return spellsuggest(expand(word))
 enddef
 
-def FzfSpellsuggestSink(word: string)
+def FzfSpellsuggestSink(word: string): void
   var mod = 'normal'
   var reg = '"_'
   var cmd = 'ciw'
@@ -28,7 +21,14 @@ def FzfSpellsuggestSink(word: string)
   execute cmd_str
 enddef
 
-export def FzfSpellsuggest()
+export def FzfSpellsuggest(): void
+  var fzf_spellsuggest_options = {
+    'source': FzfSpellsuggestSource("<cword>"),
+    'sink': FzfSpellsuggestSink
+  }
+
+  var fzf_spec = extend(fzf_spellsuggest_options, Fzf.options)
+
   fzf#run(fzf_spec)
 enddef
 
