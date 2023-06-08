@@ -1,10 +1,9 @@
 vim9script
-
-import './fzf-spellsuggest.vim' as FzfSS
-
 ##
 # ::: Fzf Spellsuggest Command :::
 #
+
+import './fzf-spellsuggest.vim' as FzfSS
 
 command FzfSS FzfSS.FzfSpellsuggest()
 
