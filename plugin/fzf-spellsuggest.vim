@@ -1,10 +1,9 @@
 vim9script
-
-import './fzf-options.vim' as Fzf
-
 ##
 # ::: Fzf Spellsuggest :::
 #
+
+import './fzf-options.vim' as Fzf
 
 def FzfSpellsuggestSource(word: string): list<string>
   return spellsuggest(expand(word))
