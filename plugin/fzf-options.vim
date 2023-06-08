@@ -1,5 +1,4 @@
 vim9script
-
 ##
 # ::: Fzf Options :::
 #
