@@ -11,6 +11,10 @@ var config = {
     'height': 0.8
   },
 
+  'commands': {
+    'enter': 'normal "_ciw'
+  },
+
   'term_command': [
     'fzf',
     '--no-multi',
@@ -58,7 +62,7 @@ def SetCloseCb(file: string): func(channel): string
     var commands: list<string>
 
     if key == 'enter'
-      commands = [':$bwipeout', $'normal "_ciw{value}', $"call delete('{file}')"]
+      commands = [':$bwipeout', $"{config['commands']['enter']}{value}", $"call delete('{file}')"]
     else
       commands = [':$bwipeout', $":", $"call delete('{file}')"]
     endif
