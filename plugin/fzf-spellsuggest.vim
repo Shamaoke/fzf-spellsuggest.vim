@@ -1,33 +1,144 @@
 vim9script
-##
-# ::: Fzf Spellsuggest :::
-#
+##                        ##
+# ::: Fzf Spellsuggest ::: #
+##                        ##
 
-import './fzf-options.vim' as Fzf
+var config = {
+  'fzf_default_command': $FZF_DEFAULT_COMMAND,
 
-def FzfSpellsuggestSource(word: string): list<string>
-  return spellsuggest(expand(word))
-enddef
+  'geometry': {
+    'width': 0.8,
+    'height': 0.8
+  },
 
-def FzfSpellsuggestSink(word: string): void
-  var mod = 'normal'
-  var reg = '"_'
-  var cmd = 'ciw'
-  var sub = word
+  'term_command': [
+    'fzf',
+    '--no-multi',
+    '--expect=enter'
+  ],
 
-  var cmd_str = $"{mod} {reg}{cmd}{sub}"
+  'term_options': {
+    'hidden': true,
+    'out_io': 'file'
+  },
 
-  execute cmd_str
-enddef
-
-export def FzfSpellsuggest(): void
-  var fzf_spellsuggest_options = {
-    'source': FzfSpellsuggestSource("<cword>"),
-    'sink': FzfSpellsuggestSink
+  'popup_options': {
+    'title': '─ ::: Fzf Spellsuggest ::: ─',
+    'border': [1, 1, 1, 1],
+    'borderchars': ['─', '│', '─', '│', '┌', '┐', '┘', '└']
   }
+}
 
-  var fzf_spec = extend(fzf_spellsuggest_options, Fzf.options)
+def SetExitCb( ): func(job, number): string
 
-  fzf#run(fzf_spec)
+  def Callback(job: job, status: number): string
+    var commands: list<string>
+
+    commands = ['quit']
+
+    return execute(commands)
+  enddef
+
+  return Callback
+
 enddef
 
+def SetCloseCb(file: string): func(channel): string
+
+  def Callback(channel: channel): string
+    var data: list<string> = readfile(file)
+
+    if data->len() < 2
+      return execute([':$bwipeout', ':', $"call delete('{file}')"])
+    endif
+
+    var key   = data->get(0)
+    var value = data->get(-1)
+
+    var commands: list<string>
+
+    if key == 'enter'
+      commands = [':$bwipeout', $'normal "_ciw{value}', $"call delete('{file}')"]
+    else
+      commands = [':$bwipeout', $":", $"call delete('{file}')"]
+    endif
+
+    return execute(commands)
+  enddef
+
+  return Callback
+
+enddef
+
+def ExtendTermCommandOptions(options: list<string>): list<string>
+  var extensions = [ ]
+
+  return options->extendnew(extensions)
+enddef
+
+def ExtendTermOptions(options: dict<any>): dict<any>
+  var tmp_file = tempname()
+
+  var extensions =
+    { 'out_name': tmp_file,
+      'exit_cb': SetExitCb(),
+      'close_cb': SetCloseCb(tmp_file) }
+
+  return options->extendnew(extensions)
+enddef
+
+def ExtendPopupOptions(options: dict<any>): dict<any>
+  var extensions =
+    { 'minwidth':  (&columns * config['geometry']->get('width'))->ceil()->float2nr(),
+      'minheight': (&lines * config['geometry']->get('height'))->ceil() ->float2nr() }
+
+   return options->extendnew(extensions)
+enddef
+
+def SetFzfCommand( ): void
+
+  var command: string
+
+  def ListSuggestions( ): string
+    var suggestions = expand("<cword>")->spellsuggest()->join('\\n')
+
+    return suggestions
+  enddef
+
+  command = $"echo -n {ListSuggestions()}"
+
+  $FZF_DEFAULT_COMMAND = command
+
+enddef
+
+def RestoreFzfCommand( ): void
+  $FZF_DEFAULT_COMMAND = config->get('fzf_default_command')
+enddef
+
+def Start( ): void
+  term_start(
+    config
+      ->get('term_command')
+      ->ExtendTermCommandOptions(),
+    config
+      ->get('term_options')
+      ->ExtendTermOptions())
+    ->popup_create(
+        config
+          ->get('popup_options')
+          ->ExtendPopupOptions())
+enddef
+
+def FzfSS( ): void
+  SetFzfCommand()
+
+  try
+    Start()
+  finally
+    RestoreFzfCommand()
+  endtry
+enddef
+
+command FzfSS FzfSS()
+
+# vim: set textwidth=80 colorcolumn=80:
