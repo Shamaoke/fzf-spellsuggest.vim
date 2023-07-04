@@ -6,6 +6,10 @@ vim9script
 var config = {
   'fzf_default_command': $FZF_DEFAULT_COMMAND,
 
+  'fzf_data': ( ) => expand("<cword>")->spellsuggest()->join('\\n'),
+
+  'fzf_command': (data) => $"echo -n {data}",
+
   'geometry': {
     'width': 0.8,
     'height': 0.8
@@ -95,20 +99,8 @@ def ExtendPopupOptions(options: dict<any>): dict<any>
    return options->extendnew(extensions)
 enddef
 
-def SetFzfCommand( ): void
-
-  var command: string
-
-  def ListSuggestions( ): string
-    var suggestions = expand("<cword>")->spellsuggest()->join('\\n')
-
-    return suggestions
-  enddef
-
-  command = $"echo -n {ListSuggestions()}"
-
-  $FZF_DEFAULT_COMMAND = command
-
+def SetFzfCommand(data: string): void
+  $FZF_DEFAULT_COMMAND = config.fzf_command(data)
 enddef
 
 def RestoreFzfCommand( ): void
@@ -130,7 +122,7 @@ def Start( ): void
 enddef
 
 def FzfSS( ): void
-  SetFzfCommand()
+  SetFzfCommand(config.fzf_data())
 
   try
     Start()
