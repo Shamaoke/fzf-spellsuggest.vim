@@ -12,7 +12,7 @@ var config = {
   },
 
   'commands': {
-    'enter': 'normal "_ciw'
+    'enter': (entry) => $'normal "_ciw{entry}'
   },
 
   'term_command': [
@@ -53,19 +53,15 @@ def SetCloseCb(file: string): func(channel): string
     var data: list<string> = readfile(file)
 
     if data->len() < 2
-      return execute([':$bwipeout', ':', $"call delete('{file}')"])
+      return execute([':$bwipeout', $"call delete('{file}')"])
     endif
 
     var key   = data->get(0)
-    var value = data->get(-1)
+    var entry = data->get(-1)
 
     var commands: list<string>
 
-    if key == 'enter'
-      commands = [':$bwipeout', $"{config['commands']['enter']}{value}", $"call delete('{file}')"]
-    else
-      commands = [':$bwipeout', $":", $"call delete('{file}')"]
-    endif
+    commands = [':$bwipeout', config['commands'][key](entry), $"call delete('{file}')"]
 
     return execute(commands)
   enddef
