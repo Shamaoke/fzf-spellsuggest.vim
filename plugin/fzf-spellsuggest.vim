@@ -41,6 +41,6 @@ var spec = {
   }
 }
 
-command DvFzfSS Fzf.Run(spec)
+command FzfSS Fzf.Run(spec)
 
 # vim: set textwidth=80 colorcolumn=80:
