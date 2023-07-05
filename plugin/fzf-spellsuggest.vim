@@ -10,7 +10,7 @@ var spec = {
 
   'fzf_data': ( ) => expand("<cword>")->spellsuggest()->join('\\n'),
 
-  'fzf_command': (data) => $"echo -n {data}",
+  'fzf_command': (data) => $"echo -n \"{data}\"",
 
   'tmp_file': ( ) => tempname(),
 
@@ -41,6 +41,6 @@ var spec = {
   }
 }
 
-command FzfSS Fzf.Run(spec)
+command DvFzfSS Fzf.Run(spec)
 
 # vim: set textwidth=80 colorcolumn=80:
