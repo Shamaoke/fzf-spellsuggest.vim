@@ -8,9 +8,9 @@ import 'fzf-run.vim' as Fzf
 var spec = {
   'fzf_default_command': $FZF_DEFAULT_COMMAND,
 
-  'fzf_data': ( ) => expand("<cword>")->spellsuggest()->join('\\n'),
+  'set_fzf_data': ( ) => expand("<cword>")->spellsuggest()->join('\\n'),
 
-  'fzf_command': (data) => $"echo -n \"{data}\"",
+  'set_fzf_command': (data) => $"echo -n \"{data}\"",
 
   'set_tmp_file': ( ) => tempname(),
 
