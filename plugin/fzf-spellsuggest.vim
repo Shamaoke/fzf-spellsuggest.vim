@@ -29,6 +29,8 @@ var spec = {
     '--expect=enter'
   ],
 
+  'set_term_command_options': ( ) => [ ],
+
   'term_options': {
     'hidden': true,
     'out_io': 'file'
