@@ -6,13 +6,13 @@ vim9script
 import 'fzf-run.vim' as Fzf
 
 var spec = {
-  'fzf_default_command': $FZF_DEFAULT_COMMAND,
-
-  'set_fzf_data': ( ) => expand("<cword>")->spellsuggest()->join('\\n'),
-
-  'set_fzf_command': (data) => $"echo -n \"{data}\"",
+  'set_fzf_data': (data) =>
+    expand("<cword>")
+      ->spellsuggest()
+      ->writefile(data),
 
   'set_tmp_file': ( ) => tempname(),
+  'set_tmp_data': ( ) => tempname(),
 
   'geometry': {
     'width': 0.8,
@@ -29,7 +29,8 @@ var spec = {
     '--expect=enter'
   ],
 
-  'set_term_command_options': ( ) => [ ],
+  'set_term_command_options': (data) =>
+    [ $"--bind=start:reload^cat '{data}'^" ],
 
   'term_options': {
     'hidden': true,
