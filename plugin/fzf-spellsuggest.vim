@@ -26,7 +26,7 @@ var spec = {
   'term_command': [
     'fzf',
     '--no-multi',
-    '--bind=alt-h:first,alt-e:last',
+    '--bind=ctrl-h:first,ctrl-e:last',
     '--expect=enter'
   ],
 
